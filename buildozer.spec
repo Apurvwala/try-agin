@@ -20,6 +20,10 @@ requirements = python3==3.9.5,kivy==2.1.0,flask,flask-cors,numpy,Pillow,requests
 # (str) Main application file
 main.py = main.py
 
+# (str) The directory where your main.py and other source files are located.
+# In Google Colab, this typically refers to the current working directory.
+source.dir = .
+
 # (list) List of target machine for android/ios/desktop (comma separated)
 target = android
 
