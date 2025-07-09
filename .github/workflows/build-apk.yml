@@ -8,38 +8,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.10
+          python-version: '3.10'
 
-      - name: Install dependencies
+      - name: 📦 Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y zip unzip openjdk-17-jdk python3-pip python3-setuptools git build-essential libtool libffi-dev libssl-dev
+          sudo apt install -y \
+            build-essential ccache git zip unzip openjdk-11-jdk python3-pip \
+            libffi-dev libssl-dev libsqlite3-dev libjpeg-dev zlib1g-dev \
+            libncurses5-dev libncursesw5-dev libtiff-dev libreadline-dev \
+            libpng-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev \
+            libfribidi-dev libxcb1-dev
+
+      - name: 📦 Install Python dependencies
+        run: |
           pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Initialize buildozer
+      - name: ⚙️ Buildozer Init (if not exists)
         run: |
-          buildozer init
-          sed -i 's/^# *source.include_exts = .*/source.include_exts = py,png,jpg,kv,atlas,mp3/' buildozer.spec
-          sed -i 's/^# *requirements = .*/requirements = python3,kivy,flask,flask-cors,requests,numpy,pillow,face_recognition/' buildozer.spec
-          sed -i 's/^# *android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
-          echo "android.ndk_api = 23" >> buildozer.spec
-          echo "android.api = 31" >> buildozer.spec
-          echo "android.minapi = 23" >> buildozer.spec
-          echo "p4a.branch = develop" >> buildozer.spec
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
 
-      - name: Build APK
+      - name: 🚀 Build APK
         run: |
-          buildozer android debug
+          buildozer -v android debug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: 📤 Upload APK file
+        uses: actions/upload-artifact@v4
         with:
-          name: faceapp-apk
+          name: kivy-apk
           path: bin/*.apk
