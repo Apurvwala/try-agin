@@ -1,53 +1,34 @@
-name: Build Kivy APK
+name: Build Android APK
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60 # Set a timeout for the entire job
 
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v5
+      - name: Build APK using Buildozer
+        # This action handles Python setup, Buildozer installation,
+        # Android SDK/NDK download, license acceptance, and the build process
+        # based on your buildozer.spec file.
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          python-version: '3.10'
+          command: buildozer android debug
+          buildozer_version: stable
+          # No need for manual Python setup, environment variables, or sdkmanager calls here,
+          # as the action manages them internally.
 
-      - name: 📦 Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            build-essential ccache git zip unzip openjdk-11-jdk python3-pip \
-            libffi-dev libssl-dev libsqlite3-dev libjpeg-dev zlib1g-dev \
-            libncurses5-dev libncursesw5-dev libtiff-dev libreadline-dev \
-            libpng-dev libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev \
-            libfribidi-dev libxcb1-dev
-
-      - name: 📦 Install Python dependencies
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython
-
-      - name: 🛠️ Install Android SDK Build-Tools manually
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "build-tools;36.0.0" "platforms;android-33" "platform-tools"
-
-      - name: ⚙️ Buildozer Init (if not exists)
-        run: |
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
-
-      - name: 🚀 Build APK
-        run: |
-          buildozer -v android debug
-
-      - name: 📤 Upload APK file
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: kivy-apk
-          path: bin/*.apk
+          name: myapp-debug-apk
+          path: ${{ steps.buildozer.outputs.filename }} # Path to the generated APK from the action
+          retention-days: 7 # How long the artifact will be stored on GitHub
