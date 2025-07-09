@@ -1,3 +1,12 @@
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = normal output, 2 = debug)
+log_level = 1
+
+# (bool) Warn if running as root (0 = no warning, 1 = warn)
+warn_on_root = 1
+
+
 [app]
 
 # (str) Title of your application
@@ -43,3 +52,4 @@ source.exclude_dirs = .buildozer, .git, __pycache__
 
 # (str) Log level for the build process (debug, info, warning, error, critical)
 log_level = info
+
