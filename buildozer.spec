@@ -27,7 +27,7 @@ requirements = python3,kivy==2.1.0,flask,flask-cors,numpy,Pillow,requests,git+ht
 
 # (str) Main application file
 entrypoint = main.py
-
+orientation = portrait
 # (str) The directory where your main.py and other source files are located.
 source.dir = .
 
