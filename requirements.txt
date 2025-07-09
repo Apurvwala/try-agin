@@ -1,0 +1,7 @@
+kivy
+flask
+flask-cors
+face_recognition
+numpy
+requests
+pillow
